@@ -1,0 +1,21 @@
+---
+import Layout from "../components/Layout.astro";
+import wishlistScript from "../scripts/wishlist-page.ts?url";
+
+---
+
+<Layout title="Wishlist">
+  <div class="pt-6 pb-6 md:pb-12">
+    <h1 class="text-center text-2xl md:text-4xl font-['Poppins',_sans-serif] font-semibold text-[#3b3b3b]">Favoritos</h1>
+    <p class="text-center text-sm md:text-base mt-3 text-[#4a4a4a]">
+      Guarda tus favoritos y vuelve cuando quieras.
+    </p>
+  </div>
+
+  <p id="wishlist-empty" class="text-center text-gray-500 hidden">
+    Tu lista esta vacia
+  </p>
+  <div id="wishlist-grid" class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3"></div>
+</Layout>
+
+<script type="module" src={wishlistScript}></script>

@@ -1,0 +1,15 @@
+---
+import Product from "./Product.astro";
+
+const { products = [] } = Astro.props as { products: any[] };
+---
+
+{products.length ? (
+  <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+    {products.map((product) => (
+      <Product product={product} />
+    ))}
+  </div>
+) : (
+  <p class="text-center text-gray-500">No hay productos disponibles.</p>
+)}

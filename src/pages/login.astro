@@ -1,0 +1,63 @@
+---
+import Layout from "../components/Layout.astro";
+import loginScript from "../scripts/login-page.ts?url";
+---
+
+<Layout title="Login">
+  <div class="min-h-[70vh] flex items-center justify-center">
+    <div class="w-full max-w-md rounded-3xl p-8 bg-white/90 border border-[rgba(0,178,227,0.2)] shadow-[0_18px_40px_-30px_rgba(6,38,48,0.45)]">
+      <h1 class="text-3xl md:text-4xl font-['Poppins',_sans-serif] font-semibold text-center mb-6 text-[#3b3b3b]">Log in</h1>
+
+      <div id="login-logged-in" class="hidden text-center">
+        <p class="text-base mb-4">Bienvenido, <span id="login-username"></span>!</p>
+        <button
+          id="login-logout"
+          class="w-full inline-flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold bg-white border border-[rgba(0,178,227,0.3)] text-[#3b3b3b] hover:text-[#007da0] hover:border-[rgba(0,178,227,0.6)] transition"
+          type="button"
+        >
+          Logout
+        </button>
+      </div>
+
+      <div id="login-logged-out">
+        <div
+          id="login-error"
+          class="mb-4 text-sm text-red-600 border border-red-200 rounded-2xl p-3 bg-red-50 hidden"
+        ></div>
+        <form id="login-form" class="space-y-5">
+          <input
+            id="login-email"
+            type="email"
+            placeholder="Email"
+            required
+            class="w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+          />
+          <input
+            id="login-password"
+            type="password"
+            placeholder="Password"
+            required
+            class="w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+          />
+          <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-semibold bg-[#00b2e3] text-white shadow-[0_14px_30px_-18px_rgba(0,125,160,0.8)] hover:bg-[#009bc7] transition">
+            Log In
+          </button>
+        </form>
+        <div class="mt-5">
+          <button
+            id="login-google"
+            class="w-full inline-flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold bg-white border border-[rgba(0,178,227,0.3)] text-[#3b3b3b] hover:text-[#007da0] hover:border-[rgba(0,178,227,0.6)] transition"
+            type="button"
+          >
+            Iniciar con Google
+          </button>
+        </div>
+        <p class="mt-6 text-center text-sm text-[#4a4a4a]">
+          <a href="/register" class="text-xs font-semibold tracking-[0.15em] uppercase hover:text-[#00b2e3] transition">Registro</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script type="module" src={loginScript}></script>

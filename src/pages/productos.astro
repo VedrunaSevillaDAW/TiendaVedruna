@@ -1,0 +1,49 @@
+---
+import shuffle from "lodash.shuffle";
+import Layout from "../components/Layout.astro";
+import { printful } from "../lib/printful-client";
+import { formatVariantName } from "../lib/format-variant-name";
+import type { PrintfulProduct } from "../types";
+import ProductGrid from "../components/ProductGrid.astro";
+import homeScript from "../scripts/home-page.ts?url";
+
+type PrintfulProductWithVariants = PrintfulProduct & {
+  variants: any[];
+};
+
+const { result: productIds } = await printful.get("sync/products");
+
+const allProducts = await Promise.all(
+  productIds.map(async ({ id }) => await printful.get(`sync/products/${id}`))
+);
+
+const products: PrintfulProductWithVariants[] = allProducts.map(
+  ({ result: { sync_product, sync_variants } }) => ({
+    ...sync_product,
+    variants: sync_variants.map(({ name, ...variant }) => ({
+      name: formatVariantName(name),
+      ...variant,
+    })),
+  })
+);
+
+const shuffledProducts = shuffle(products);
+---
+
+<Layout title="Nuestros Productos | Tienda Vedruna">
+  <section class="pt-6 pb-6 md:pb-10">
+    <div class="rounded-3xl bg-white/90 border border-[rgba(0,178,227,0.2)] p-8 shadow-[0_18px_40px_-30px_rgba(6,38,48,0.45)] text-center">
+      <p class="text-[11px] uppercase tracking-[0.28em] font-semibold text-[#007da0]">Coleccion Vedruna</p>
+      <h1 class="mt-4 text-3xl md:text-5xl font-['Poppins',_sans-serif] font-semibold text-[#3b3b3b]">
+        Nuestros Productos
+      </h1>
+      <p class="mt-4 text-base md:text-lg text-[#4a4a4a] leading-relaxed">
+        Descubre la coleccion actual y elige tus favoritos.
+      </p>
+    </div>
+  </section>
+
+  <ProductGrid products={shuffledProducts} />
+</Layout>
+
+<script type="module" src={homeScript}></script>

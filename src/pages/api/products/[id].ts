@@ -1,42 +1,39 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
+import type { APIRoute } from "astro";
 import { printful } from "../../../lib/printful-client";
 
-type Data = {
-  id: string;
-  price: number;
-  url: string;
-};
+export const GET: APIRoute = async ({ params }) => {
+  const id = params.id;
 
-type Error = {
-  errors: { key: string; message: string }[];
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data | Error>
-) {
-  const { id } = req.query;
+  if (!id) {
+    return new Response(
+      JSON.stringify({ errors: [{ key: "missing_id", message: "Missing id." }] }),
+      { status: 400 }
+    );
+  }
 
   try {
     const { result } = await printful.get(`store/variants/@${id}`);
-
-    res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
-
-    res.status(200).json({
-      id: id as string,
+    const body = {
+      id,
       price: result.retail_price,
       url: `/api/products/${id}`,
-    });
-  } catch ({ error }) {
-    console.log(error);
-    res.status(404).json({
-      errors: [
-        {
-          key: error?.message,
-          message: error?.message,
-        },
-      ],
-    });
+    };
+
+    const headers = new Headers();
+    headers.set("Cache-Control", "s-maxage=3600, stale-while-revalidate");
+
+    return new Response(JSON.stringify(body), { status: 200, headers });
+  } catch (error: any) {
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            key: error?.message,
+            message: error?.message,
+          },
+        ],
+      }),
+      { status: 404 }
+    );
   }
-}
+};
