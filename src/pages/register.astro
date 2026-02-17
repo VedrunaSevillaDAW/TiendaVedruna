@@ -1,0 +1,84 @@
+---
+import Layout from "../components/Layout.astro";
+import registerScript from "../scripts/register-page.ts?url";
+---
+
+<Layout title="Register">
+  <div class="min-h-[70vh] flex items-center justify-center">
+    <div class="w-full max-w-md rounded-3xl p-8 bg-white/90 border border-[rgba(0,178,227,0.2)] shadow-[0_18px_40px_-30px_rgba(6,38,48,0.45)]">
+      <h1 class="text-3xl font-['Poppins',_sans-serif] font-semibold text-center mb-6 text-[#3b3b3b]">
+        Crear una cuenta
+      </h1>
+
+      <p id="register-error" class="text-red-600 text-center hidden"></p>
+      <p id="register-success" class="text-green-600 text-center hidden"></p>
+
+      <form id="register-form" class="space-y-4">
+        <div>
+          <label for="register-name" class="block text-xs uppercase tracking-widest text-[#4a4a4a]"
+            >Nombre</label
+          >
+          <input
+            type="text"
+            id="register-name"
+            class="mt-2 w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+            placeholder="Enter your name"
+            required
+          />
+        </div>
+        <div>
+          <label for="register-surname" class="block text-xs uppercase tracking-widest text-[#4a4a4a]"
+            >Apellidos</label
+          >
+          <input
+            type="text"
+            id="register-surname"
+            class="mt-2 w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+            placeholder="Enter your surname"
+            required
+          />
+        </div>
+        <div>
+          <label for="register-email" class="block text-xs uppercase tracking-widest text-[#4a4a4a]"
+            >Email</label
+          >
+          <input
+            type="email"
+            id="register-email"
+            class="mt-2 w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div>
+          <label
+            for="register-password"
+            class="block text-xs uppercase tracking-widest text-[#4a4a4a]"
+            >Contraseña</label
+          >
+          <input
+            type="password"
+            id="register-password"
+            class="mt-2 w-full rounded-2xl px-4 py-3 text-sm bg-white/95 border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-semibold bg-[#00b2e3] text-white shadow-[0_14px_30px_-18px_rgba(0,125,160,0.8)] hover:bg-[#009bc7] transition"
+        >
+          Crear
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <a href="/" class="text-xs font-semibold tracking-[0.15em] uppercase hover:text-[#00b2e3] transition"
+          >Volver a la pagina de inicio</a
+        >
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script type="module" src={registerScript}></script>

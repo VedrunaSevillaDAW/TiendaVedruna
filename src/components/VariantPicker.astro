@@ -1,0 +1,14 @@
+---
+const { variants = [] } = Astro.props as { variants: any[] };
+---
+
+{variants.length > 1 ? (
+  <select
+    class="appearance-none mb-3 sm:mb-0 flex-grow sm:mr-3 w-full rounded-full px-4 py-2 text-sm bg-white/90 border border-[rgba(0,178,227,0.2)] text-[#4a4a4a] focus:outline-none focus:border-[#00b2e3] focus:ring-2 focus:ring-[#00b2e3]/20"
+    data-variant-select
+  >
+    {variants.map((variant) => (
+      <option value={variant.external_id}>{variant.color} - {variant.size}</option>
+    ))}
+  </select>
+) : null}

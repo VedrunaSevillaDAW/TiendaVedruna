@@ -1,116 +1,145 @@
-.snipcart {
-  @apply font-sans text-base text-gray-800 font-normal;
+@reference "tailwindcss";
+
+.simpleCart_items {
+  @apply text-sm;
 }
 
-.snipcart-modal,
-.snipcart-modal__container,
-.snipcart-cart__content,
-.snipcart-cart-header,
-.snipcart-featured-payment-methods__title {
-  @apply bg-gray-50;
+.simpleCart_items table {
+  @apply w-full border-collapse;
 }
 
-.snipcart__font--regular,
-.snipcart__font--primary,
-.snipcart__font--secondary,
-.snipcart__font--subtitle {
-  @apply font-sans leading-normal;
+.simpleCart_items th,
+.simpleCart_items td {
+  @apply py-2 align-middle;
 }
 
-.snipcart__font--subtitle {
-  @apply font-semibold text-lg md:text-xl;
+.simpleCart_items td.item-decrement,
+.simpleCart_items td.item-increment,
+.simpleCart_items td.item-remove,
+.simpleCart_items td.item-quantity {
+  @apply text-center;
 }
 
-.snipcart-cart-button--highlight {
-  background-image: none;
-  @apply bg-blue-600 rounded;
+.simpleCart_items thead tr {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto;
+  grid-template-areas: "name price decrement quantity increment total";
+  gap: 6px 8px;
+  padding: 0 0 8px 0;
 }
 
-.snipcart__box--badge-highlight {
-  background-image: none;
-  @apply bg-blue-600 text-white font-medium;
+.simpleCart_items th {
+  @apply text-[10px] uppercase tracking-[0.12em] text-[#007da0] font-semibold;
 }
 
-.snipcart__actions--link {
-  @apply text-blue-600 font-normal text-sm;
+.simpleCart_items th.item-name {
+  grid-area: name;
 }
 
-.snipcart-cart-summary-fees__notice {
-  @apply text-sm text-gray-500 my-6;
+.simpleCart_items th.item-price {
+  grid-area: price;
 }
 
-.snipcart-shipping-rates-list-item--highlight {
-  @apply border-blue-600 bg-white;
+.simpleCart_items th.item-decrement {
+  grid-area: decrement;
+  visibility: hidden;
 }
 
-.snipcart-form-radio {
-  @apply text-blue-600 border-gray-300 shadow-sm focus:ring-0 p-0;
+.simpleCart_items th.item-quantity {
+  grid-area: quantity;
 }
 
-.snipcart-form-radio + label {
-  @apply text-gray-500 text-sm;
+.simpleCart_items th.item-increment {
+  grid-area: increment;
+  visibility: hidden;
 }
 
-.snipcart-form-radio + label:before {
-  background-image: none;
-  @apply rounded-full w-4 h-4 min-w-0 min-h-0 shadow-sm flex items-center border border-gray-300 cursor-pointer;
+.simpleCart_items th.item-total {
+  grid-area: total;
 }
 
-.snipcart-form-radio:checked + label:before {
-  background-image: none;
-  @apply bg-blue-600;
+.simpleCart_items th.item-remove {
+  display: none;
 }
 
-.snipcart-form-radio:checked + label:after {
-  @apply hidden;
+.simpleCart_items td {
+  @apply text-[#3b3b3b];
 }
 
-.snipcart-shipping-rates-list-item__price {
-  @apply text-gray-900 text-sm leading-5;
+.simpleCart_items tbody tr {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto;
+  grid-template-areas:
+    "name name name name name remove"
+    "price decrement quantity increment total remove";
+  gap: 6px 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 178, 227, 0.14);
 }
 
-/* .snipcart-modal,
-.snipcart-cart-header,
-.snipcart-cart__secondary-header,
-.snipcart-modal__container {
-  @apply font-sans;
+.simpleCart_items td.item-name {
+  grid-area: name;
 }
 
-.snipcart-modal .snipcart-cart-header__close-button {
-  @apply text-gray-500;
+.simpleCart_items td.item-price {
+  grid-area: price;
 }
 
-.snipcart-form__field {
-  @apply pt-4;
+.simpleCart_items td.item-decrement {
+  grid-area: decrement;
 }
 
-.snipcart-input,
-.snipcart-form__select {
-  @apply w-full rounded-md shadow-sm bg-transparent focus:z-10 sm:text-sm text-gray-900 focus:ring-0 placeholder-gray-400 border-gray-300 focus:border-gray-300;
+.simpleCart_items td.item-quantity {
+  grid-area: quantity;
 }
 
-.snipcart-typeahead--invalid {
-  @apply border-red-500;
+.simpleCart_items td.item-increment {
+  grid-area: increment;
 }
 
-.snipcart-error-message--input {
-  @apply text-red-500;
+.simpleCart_items td.item-total {
+  grid-area: total;
 }
 
-.snipcart-cart-button--highlight {
-  background: none;
-  @apply py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+.simpleCart_items td.item-remove {
+  grid-area: remove;
+  align-self: center;
 }
 
-.snipcart__box--badge {
-  @apply border-none bg-gray-50 text-blue-600;
+.simpleCart_items .item-name {
+  @apply font-semibold;
+  max-width: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
-.snipcart__box--badge-highlight {
-  background: none;
-  @apply font-sans bg-blue-600 text-white font-medium ring-offset-2 focus:ring-blue-500 border-none;
+.cart-product-cell {
+  @apply flex items-center gap-2 min-w-0;
 }
 
-.snipcart__box {
-  @apply bg-white;
-} */
+.cart-product-thumb {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 178, 227, 0.2);
+  background: #f3f7f9;
+}
+
+.simpleCart_items .item-price,
+.simpleCart_items .item-total {
+  @apply text-[#4a4a4a];
+}
+
+.simpleCart_increment,
+.simpleCart_decrement,
+.simpleCart_remove {
+  @apply inline-flex items-center justify-center w-6 h-6 rounded-full border border-[rgba(0,178,227,0.3)] text-[#007da0] text-xs font-semibold hover:bg-[#00b2e3] hover:text-white transition;
+}
+
+.simpleCart_empty {
+  @apply text-sm text-[#4a4a4a];
+}
