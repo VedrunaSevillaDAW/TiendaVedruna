@@ -1,11 +1,13 @@
 import { isInWishlist, toggleWishlistItem } from "./wishlist-store";
 
+// Formatea precio en moneda segun locale.
 const formatPrice = (value: number, currency: string) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
   }).format(value);
 
+// Lee variantes serializadas en data-variants de la tarjeta.
 const parseVariants = (card: HTMLElement): any[] => {
   const raw = card.dataset.variants;
   if (!raw) return [];
@@ -16,9 +18,11 @@ const parseVariants = (card: HTMLElement): any[] => {
   }
 };
 
+// Busca el archivo de preview de una variante.
 const getPreviewFile = (variant: any) =>
   variant?.files?.find((file: any) => file.type === "preview");
 
+// Pinta el estado visual del corazon en funcion de wishlist.
 const updateWishlistIcon = (card: HTMLElement, productId: string) => {
   const icon = card.querySelector<SVGElement>("[data-wishlist-icon]");
   if (!icon) return;
@@ -30,6 +34,7 @@ const updateWishlistIcon = (card: HTMLElement, productId: string) => {
   }
 };
 
+// Intenta anadir un item al carrito; devuelve exito/fallo.
 const addItemToCart = (button: HTMLButtonElement) => {
   const id = button.dataset.itemId;
   const name = button.dataset.itemName;
@@ -45,6 +50,7 @@ const addItemToCart = (button: HTMLButtonElement) => {
     id,
     name,
     price,
+    // Cantidad inicial por click.
     quantity: 1,
     ...(url ? { url } : {}),
     ...(description ? { description } : {}),
@@ -54,6 +60,7 @@ const addItemToCart = (button: HTMLButtonElement) => {
   return true;
 };
 
+// Actualiza precio, imagen y datos de compra al cambiar variante.
 const updateVariantUI = (card: HTMLElement, variant: any) => {
   const priceEl = card.querySelector<HTMLElement>("[data-product-price]");
   const imageEl = card.querySelector<HTMLImageElement>("[data-product-image]");
@@ -79,6 +86,7 @@ const updateVariantUI = (card: HTMLElement, variant: any) => {
   }
 };
 
+// Inicializa comportamiento de tarjetas de producto en un contenedor dado.
 export const initProductCards = (root: ParentNode = document) => {
   const cards = root.querySelectorAll<HTMLElement>("[data-product-card]");
 
@@ -92,10 +100,12 @@ export const initProductCards = (root: ParentNode = document) => {
 
     updateWishlistIcon(card, productId);
 
+    // Carga variante inicial por defecto.
     if (variants.length > 0) {
       updateVariantUI(card, variants[0]);
     }
 
+    // Reacciona al selector de variantes.
     if (select && variants.length > 0) {
       select.addEventListener("change", () => {
         const chosen = variants.find(
@@ -116,17 +126,20 @@ export const initProductCards = (root: ParentNode = document) => {
 
     if (addToCartButton) {
       addToCartButton.addEventListener("click", (event) => {
+        // Evita navegacion accidental si el boton esta dentro de enlaces.
         event.preventDefault();
 
         const added = addItemToCart(addToCartButton);
         if (!added) return;
 
+        // Abre panel de carrito tras anadir.
         window.dispatchEvent(new Event("cart:open"));
       });
     }
 
     if (wishlistButton) {
       wishlistButton.addEventListener("click", () => {
+        // Alterna producto en wishlist y refresca icono.
         toggleWishlistItem({ id: productId, name: productName, variants });
         updateWishlistIcon(card, productId);
       });

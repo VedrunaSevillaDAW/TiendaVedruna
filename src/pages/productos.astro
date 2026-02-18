@@ -1,22 +1,30 @@
 ---
+// Mezcla aleatoria para variar el orden del catalogo.
 import shuffle from "lodash.shuffle";
 import Layout from "../components/Layout.astro";
+// Cliente API de Printful.
 import { printful } from "../lib/printful-client";
+// Normalizador de nombres de variantes.
 import { formatVariantName } from "../lib/format-variant-name";
 import type { PrintfulProduct } from "../types";
 import ProductGrid from "../components/ProductGrid.astro";
-import homeScript from "../scripts/home-page.ts?url";
+// Script cliente para interacciones de tarjetas.
+import productsScript from "../scripts/products-page.ts?url";
 
+// Producto enriquecido con variantes.
 type PrintfulProductWithVariants = PrintfulProduct & {
   variants: any[];
 };
 
+// Obtiene IDs sincronizados de productos en Printful.
 const { result: productIds } = await printful.get("sync/products");
 
+// Carga detalle completo de cada producto.
 const allProducts = await Promise.all(
   productIds.map(async ({ id }) => await printful.get(`sync/products/${id}`))
 );
 
+// Mapea resultado a estructura consumible por la UI.
 const products: PrintfulProductWithVariants[] = allProducts.map(
   ({ result: { sync_product, sync_variants } }) => ({
     ...sync_product,
@@ -27,6 +35,7 @@ const products: PrintfulProductWithVariants[] = allProducts.map(
   })
 );
 
+// Baraja listado para experiencia menos repetitiva.
 const shuffledProducts = shuffle(products);
 ---
 
@@ -46,4 +55,4 @@ const shuffledProducts = shuffle(products);
   <ProductGrid products={shuffledProducts} />
 </Layout>
 
-<script type="module" src={homeScript}></script>
+<script type="module" src={productsScript}></script>

@@ -1,18 +1,25 @@
 ---
+// Tipo base de producto compartido en el proyecto.
 import type { PrintfulProduct } from "../types";
+// Componente para selector de variantes.
 import VariantPicker from "./VariantPicker.astro";
 
+// Extiende producto con lista de variantes de Printful.
 type ProductWithVariants = PrintfulProduct & {
   variants: any[];
 };
 
+// Prop principal recibida por la tarjeta.
 const { product } = Astro.props as { product: ProductWithVariants };
 
+// Lista de variantes y variante inicial por defecto.
 const variants = product.variants ?? [];
 const [firstVariant] = variants;
+// Busca archivo de previsualizacion para mostrar imagen principal.
 const previewFile =
   firstVariant?.files?.find((file: any) => file.type === "preview") ?? null;
 
+// Formatea precio en moneda legible para la UI.
 const formatPrice = (value: number, currency: string) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
