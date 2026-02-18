@@ -1,8 +1,11 @@
 ---
+// Estilos globales de la aplicacion.
 import "../styles/global.css";
 import "../styles/app.css";
+// Script global del sitio (auth, wishlist, carrito, checkout).
 import siteScript from "../scripts/site.ts?url";
 
+// Titulo por defecto de documento.
 const { title = "Nukko" } = Astro.props;
 ---
 
@@ -94,6 +97,25 @@ const { title = "Nukko" } = Astro.props;
                     <path d="M12.001 4.529c2.349-2.109 5.979-2.039 8.242.228 2.262 2.268 2.34 5.88.236 8.236l-8.48 8.492-8.478-8.492c-2.104-2.356-2.025-5.974.236-8.236 2.265-2.264 5.888-2.34 8.244-.228z" />
                   </svg>
                 </a>
+                <button
+                  class="relative w-9 h-9 rounded-full flex items-center justify-center bg-white border border-[rgba(0,178,227,0.25)] text-[#3b3b3b] hover:text-[#00b2e3] transition shadow-[0_10px_24px_-18px_rgba(6,38,48,0.4)] cursor-pointer"
+                  aria-label="Cart"
+                  type="button"
+                  data-cart-button
+                >
+                  <span
+                    class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0c71c3] hidden"
+                    data-cart-indicator
+                  ></span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="w-5 h-5"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path d="M4 16V4H2V2h3a1 1 0 0 1 1 1v12h12.438l2-8H8V5h13.72a1 1 0 0 1 .97 1.243l-2.5 10a1 1 0 0 1-.97.757H5a1 1 0 0 1-1-1zm2 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm12 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

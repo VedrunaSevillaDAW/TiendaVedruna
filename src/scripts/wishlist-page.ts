@@ -1,9 +1,11 @@
 import { getWishlistItems } from "./wishlist-store";
 import { initProductCards } from "./product-cards";
 
+// Escapa caracteres para evitar HTML invalido o inyecciones en atributos.
 const escapeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
+// Construye HTML de una tarjeta de wishlist reutilizando la estructura interactiva.
 const buildCard = (product: any) => {
   const variants = Array.isArray(product.variants) ? product.variants : [];
   const [firstVariant] = variants;
@@ -97,6 +99,7 @@ const buildCard = (product: any) => {
   `;
 };
 
+// Pinta el listado de favoritos y rehidrata su logica JS.
 const renderWishlist = () => {
   const grid = document.querySelector<HTMLElement>("#wishlist-grid");
   const empty = document.querySelector<HTMLElement>("#wishlist-empty");
@@ -110,11 +113,15 @@ const renderWishlist = () => {
     return;
   }
 
+  // Render dinamico + reenganche de eventos.
   empty.classList.add("hidden");
   grid.innerHTML = items.map(buildCard).join("");
   initProductCards(grid);
+  // Fuerza refresco de estado auth/UI en elementos condicionados.
   window.dispatchEvent(new Event("storage"));
 };
 
+// Render inicial.
 window.addEventListener("DOMContentLoaded", renderWishlist);
+// Re-render cuando cambian favoritos.
 window.addEventListener("wishlist:updated", renderWishlist);
