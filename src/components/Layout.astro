@@ -69,6 +69,7 @@ const { title = "Nukko" } = Astro.props;
                   aria-label="Cart"
                   type="button"
                   data-cart-button
+                  data-auth-required
                 >
                   <span
                     class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0c71c3] hidden"
@@ -102,6 +103,7 @@ const { title = "Nukko" } = Astro.props;
                   aria-label="Cart"
                   type="button"
                   data-cart-button
+                  data-auth-required
                 >
                   <span
                     class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0c71c3] hidden"
@@ -195,8 +197,9 @@ const { title = "Nukko" } = Astro.props;
     </div>
     <div class="fixed inset-0 bg-[#062630]/30 opacity-0 pointer-events-none transition-opacity duration-300 z-[90]" data-cart-backdrop></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplecartjs/3.0.5/simplecart.min.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/simplecartjs/3.0.5/simplecart.min.js"></script>
     <script type="module" src={siteScript}></script>
   </body>
 </html>
+

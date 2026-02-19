@@ -23,12 +23,13 @@ npm install
 Usa los valores de ejemplo de la sección **3. Variables de entorno**.
 
 #### 1.4 Levantar el servicio externo de autenticación
-Sigue la sección **4. Integración con repositorio externo `login-vedruna`**.
+Integración con repositorio externo `login-vedruna`**.
 
 #### 1.5 Ejecutar la tienda
 ```bash
 npm run dev
 ```
+
 
 #### 1.6 Abrir en navegador
 - `http://localhost:4321`
@@ -71,11 +72,13 @@ LOGIN_BASE_URL=http://localhost:9000/
 LOGIN_CLIENT_ID=tienda-astro
 LOGIN_CLIENT_SECRET=secret
 LOGIN_REDIRECT_URI=http://localhost:4321/api/auth/callback
+PAYMENT_API_BASE_URL=http://localhost:4242
 ```
 
 Notas:
 - `LOGIN_*` se usan en los endpoints OAuth de Astro.
 - El `LOGIN_REDIRECT_URI` debe coincidir exactamente con el registrado en el servidor de auth.
+- `PAYMENT_API_BASE_URL` apunta al backend de `plataforma-pago` (Redsys).
 
 ## 5. Integración con repositorio externo `login-vedruna`
 Este proyecto depende de un servidor externo de autenticación.
@@ -180,3 +183,65 @@ INSERT INTO loginvedruna.oauth2_registered_client (
 ## 9. Estado actual del login/registro
 - Login se hace vía OAuth contra `login-vedruna`.
 - Registro de usuario se realiza en el auth server externo (`:9000/register`).
+
+## 10. Cambios recientes (carrito/login/pago)
+- Carrito restringido a usuarios logueados:
+  - El icono y acciones protegidas usan `data-auth-required`.
+  - Si no hay sesión (`localStorage.username`), no se permite añadir al carrito ni iniciar checkout.
+- Flujo de pago conectado con `plataforma-pago`:
+  - `src/pages/api/checkout.ts` crea el pago real en Redsys.
+  - `src/pages/api/checkout/status/[id].ts` consulta estado de orden.
+  - `src/pages/pago/ok.astro` y `src/pages/pago/ko.astro` gestionan retorno.
+- Ajuste recomendado en `login-vedruna` para evitar redirecciones técnicas:
+  - Archivo: `login-vedruna/src/main/java/com/vedruna/login/config/VaadinSecurityConfig.java`.
+  - El `successHandler` debe descartar rutas tipo `/.well-known/...` y, en ese caso,
+    redirigir a `http://localhost:4321/api/auth/start` para completar OAuth y cargar usuario.
+
+## 12. Integración con repositorio externo `plataforma-pago`
+Este proyecto depende de un servidor externo de pasarela de pago para procesar compras.
+
+### 12.1 Clonar y arrancar `plataforma-pago`
+Ejemplo:
+
+```bash
+git clone https://github.com/VedrunaSevillaDAW/plataforma-pago.git
+cd plataforma-pago
+mvn spring-boot:run
+```
+
+Debe quedar disponible en:
+- `http://localhost:4242`
+
+### 12.2 Configuración para la tienda
+En la tienda (`TiendaVedruna`), define en `.env`:
+
+```env
+PAYMENT_API_BASE_URL=http://localhost:4242
+```
+
+Notas:
+- `PAYMENT_API_BASE_URL` es la base del backend de pago usado por `src/pages/api/checkout.ts`.
+- La pasarela procesa el alta del pago y devuelve los parámetros firmados de Redsys.
+
+### 12.3 Flujo de enlace entre ambos proyectos
+1. Usuario autenticado añade productos al carrito.
+2. Frontend llama a `POST /api/checkout` (Astro).
+3. Astro crea la orden en `plataforma-pago` con `POST /api/redsys/payment`.
+4. Se redirige al formulario de Redsys con firma (`Ds_*`).
+5. Redsys devuelve el resultado (OK/KO) y la orden se actualiza.
+6. Al volver al frontend, el carrito se limpia cuando el pago queda confirmado.
+
+### 12.4 Ejecución local conjunta recomendada
+1. Levanta `login-vedruna` en `:9000`.
+2. Levanta `plataforma-pago` en `:4242`.
+3. Ejecuta la tienda en `:4321` (`npm run dev`).
+4. Prueba login, añade productos al carrito y completa checkout.
+
+### 12.5 Tarjetas de prueba Redsys (sandbox)
+
+- VISA: `4548 8100 0000 0003`
+- Mastercard: `5576 4415 6304 5037`
+- Caducidad: `12/49`
+- CVV: `123`
+
+Solo válidas en entorno de pruebas Redsys.

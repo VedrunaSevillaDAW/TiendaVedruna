@@ -33,7 +33,9 @@ window.addEventListener("DOMContentLoaded", () => {
     // Evita submit HTML clasico; el flujo real empieza en /api/auth/start.
     event.preventDefault();
     try {
-      window.location.href = "/api/auth/start";
+      // Evita posibles redirecciones cacheadas del navegador/proxy.
+      const startUrl = `/api/auth/start?ts=${Date.now()}`;
+      window.location.replace(startUrl);
     } catch {
       showError("No se pudo iniciar el login.");
     }

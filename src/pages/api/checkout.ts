@@ -26,6 +26,14 @@ type CheckoutPayload = {
   createdAt?: string;
 };
 
+type CreateRedsysPaymentResponse = {
+  orderId: number;
+  url: string;
+  ds_SignatureVersion: string;
+  ds_MerchantParameters: string;
+  ds_Signature: string;
+};
+
 // Validacion basica de cada item del carrito.
 const isValidItem = (item: CheckoutItem) =>
   Boolean(
@@ -72,10 +80,44 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Respuesta mock de compra aceptada.
+    const paymentApiBaseUrl =
+      import.meta.env.PAYMENT_API_BASE_URL ?? "http://localhost:4242";
+
+    const paymentResponse = await fetch(`${paymentApiBaseUrl}/api/redsys/payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amountEuro: Number(totalFromItems.toFixed(2)),
+      }),
+    });
+
+    const paymentBody =
+      (await paymentResponse.json().catch(() => ({}))) as Partial<CreateRedsysPaymentResponse>;
+
+    if (!paymentResponse.ok) {
+      return new Response(
+        JSON.stringify({ message: "No se pudo iniciar el pago con la pasarela." }),
+        { status: 502 }
+      );
+    }
+
+    const requiredFields = [
+      paymentBody.url,
+      paymentBody.ds_SignatureVersion,
+      paymentBody.ds_MerchantParameters,
+      paymentBody.ds_Signature,
+    ];
+
+    if (requiredFields.some((value) => typeof value !== "string" || !value)) {
+      return new Response(
+        JSON.stringify({ message: "La pasarela devolvio una respuesta incompleta." }),
+        { status: 502 }
+      );
+    }
+
     return new Response(
       JSON.stringify({
-        message: "Compra recibida correctamente.",
+        message: "Pago iniciado correctamente.",
         order: {
           id: `ord_${Date.now()}`,
           username: payload.username ?? null,
@@ -83,6 +125,13 @@ export const POST: APIRoute = async ({ request }) => {
           quantity: payload.quantity ?? 0,
           total: totalFromItems,
           createdAt: payload.createdAt ?? new Date().toISOString(),
+        },
+        payment: {
+          orderId: paymentBody.orderId ?? null,
+          url: paymentBody.url,
+          ds_SignatureVersion: paymentBody.ds_SignatureVersion,
+          ds_MerchantParameters: paymentBody.ds_MerchantParameters,
+          ds_Signature: paymentBody.ds_Signature,
         },
       }),
       { status: 200 }
