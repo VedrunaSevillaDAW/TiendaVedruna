@@ -1,279 +1,247 @@
-# Migracion de TiendaVedruna (Next.js) a tienda_astro (Astro puro)
+# Tienda Vedruna (Astro)
 
-Este README documenta, paso a paso, como se ha realizado la migracion del proyecto Next.js original en
-`C:\Users\tlomba\Documents\Tienda\TiendaVedruna` a un proyecto Astro puro en
-`C:\Users\tlomba\Documents\Tienda\tienda_astro`.
+Frontend e-commerce desarrollado con Astro para la tienda de Vedruna.
 
-## 0) Objetivo
+## 1. Instalación del proyecto (paso a paso)
+###  Requisitos previos
+- `Node.js` 18+ y `npm`
+- `Java` 17+ y `Maven` (para `login-vedruna`)
+- `MySQL` (usado por `login-vedruna`)
 
-- Migrar el frontend a Astro *puro* (sin React en runtime).
-- Mantener integraciones con Printful y Snipcart.
-- Mantener login/registro con Firebase.
-- Mantener wishlist, filtros y contador del carrito en JS vanilla.
-
-## 1) Crear el proyecto Astro en carpeta nueva
-
-Se creo el proyecto Astro fuera del repo original, en:
-
-```
-C:\Users\tlomba\Documents\Tienda\tienda_astro
+#### 1.1 Clonar este repositorio
+```bash
+git clone https://github.com/VedrunaSevillaDAW/TiendaVedruna.git
+cd TiendaVedruna
 ```
 
-Comandos usados:
-
-```
-npm create astro@latest tienda_astro -- --template minimal --typescript strict --install --no-git
-```
-
-Notas:
-- El primer intento dentro de `TiendaVedruna` se elimino.
-- El comando se ejecuto por `cmd` porque PowerShell tenia la policy de scripts bloqueada.
-
-## 2) Instalar Tailwind y plugins
-
-Instalacion de Tailwind para Astro:
-
-```
-npx astro add tailwind --yes
+#### 1.2 Instalar dependencias del frontend
+```bash
+npm install
 ```
 
-Plugins del proyecto original:
+#### 1.3 Crear y configurar `.env`
+Usa los valores de ejemplo de la sección **3. Variables de entorno**.
 
-```
-npm i @tailwindcss/forms @tailwindcss/typography
-```
+#### 1.4 Levantar el servicio externo de autenticación
+Integración con repositorio externo `login-vedruna`**.
 
-Y se configuro `src/styles/global.css` con:
-
-```
-@import "tailwindcss";
-@plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
-```
-
-## 3) Copiar assets publicos
-
-Se copiaron los assets de `public/` del proyecto Next:
-
-```
-Copy-Item -Recurse -Force "C:\Users\tlomba\Documents\Tienda\TiendaVedruna\public\*" "C:\Users\tlomba\Documents\Tienda\tienda_astro\public"
-```
-
-## 4) Estructura de carpetas
-
-Se crearon carpetas equivalentes en Astro:
-
-```
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\components
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\layouts
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\lib
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\pages\api\products
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\pages\api\snipcart
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\scripts
-C:\Users\tlomba\Documents\Tienda\tienda_astro\src\utils
-```
-
-## 5) Layout global y Snipcart
-
-En Next el layout global y scripts estaban en `_app.tsx` y `_document.tsx`.
-Se movieron a un layout de Astro:
-
-Archivo:
-
-```
-src/layouts/Base.astro
-```
-
-Incluye:
-- Layout de header/footer
-- Snipcart CSS y JS
-- `#snipcart` con `data-api-key`
-- Import de estilos globales
-
-## 6) CSS de Snipcart
-
-El CSS de Snipcart se migro a:
-
-```
-src/styles/app.css
-```
-
-Y se importa en `Base.astro`.
-
-## 7) Migracion de logica Printful
-
-Se crearon estos archivos equivalentes:
-
-```
-src/lib/printful-client.ts
-src/lib/format-variant-name.ts
-src/lib/create-order.ts
-```
-
-En Astro la variable de entorno se lee con:
-
-```
-import.meta.env.PRINTFUL_API_KEY
-```
-
-## 8) Variables de entorno
-
-Se creo un `.env` en el proyecto Astro:
-
-```
-PRINTFUL_API_KEY=REPLACE_WITH_YOUR_PRINTFUL_TOKEN
-PUBLIC_SNIPCART_API_KEY=REPLACE_WITH_YOUR_SNIPCART_KEY
-```
-
-`PUBLIC_SNIPCART_API_KEY` es publica y se usa en cliente.
-
-## 9) Migracion de paginas
-
-### Home
-
-Archivo:
-
-```
-src/pages/index.astro
-```
-
-Cambios:
-- `getStaticProps` se reemplazo por frontmatter y `await` directo en Astro.
-- El grid de productos se reescribio en HTML de Astro.
-- Se agrego script `home-page.ts` para filtros, wishlist y variantes.
-
-### About y Terms
-
-Archivos:
-
-```
-src/pages/about.astro
-src/pages/terms-of-sale.astro
-```
-
-Se copio el contenido y se adapto a HTML de Astro.
-
-### Wishlist
-
-Archivo:
-
-```
-src/pages/wishlist.astro
-```
-
-Se renderiza vacio en server y se completa en cliente con JS.
-
-### Login y Register
-
-Archivos:
-
-```
-src/pages/login.astro
-src/pages/register.astro
-```
-
-Login/registro se reescribio en JS vanilla (sin React hooks) usando Firebase.
-
-## 10) Scripts JS (sin React)
-
-### wishlist-store.ts
-- Maneja localStorage con `items-wishlist`.
-
-### product-cards.ts
-- Cambia variante seleccionada.
-- Actualiza precio/imagen.
-- Maneja boton wishlist.
-
-### home-page.ts
-- Inicializa productos y filtro en home.
-
-### wishlist-page.ts
-- Renderiza wishlist en HTML dinamico.
-- Actualiza al cambiar wishlist.
-
-### site.ts
-- Actualiza estado de login/logout en header.
-- Muestra/oculta indicadores de wishlist/carrito.
-- Conecta con Snipcart store.
-
-### login-page.ts y register-page.ts
-- Manejan login y registro con Firebase.
-- Guardan `username` en localStorage.
-
-## 11) Migracion de API routes
-
-En Astro se usan endpoints `APIRoute`.
-Se migraron:
-
-```
-src/pages/api/products/[id].ts
-src/pages/api/snipcart/shipping.ts
-src/pages/api/snipcart/tax.ts
-src/pages/api/snipcart/webhook.ts
-```
-
-## 12) Adapter Node para endpoints
-
-Para que Astro soporte endpoints en build, se instalo:
-
-```
-npm i @astrojs/node
-```
-
-Y se actualizo `astro.config.mjs`:
-
-```
-output: 'server'
-adapter: node({ mode: 'standalone' })
-```
-
-## 13) Dependencias finales
-
-Las dependencias principales quedaron:
-
-- astro
-- tailwindcss
-- @tailwindcss/forms
-- @tailwindcss/typography
-- printful-request
-- lodash.shuffle
-- firebase
-- @astrojs/node
-
-## 14) Como ejecutar
-
-1. Edita `.env` y pon tus claves reales:
-
-```
-PRINTFUL_API_KEY=TU_TOKEN
-PUBLIC_SNIPCART_API_KEY=TU_KEY
-```
-
-2. Ejecuta:
-
-```
-cd C:\Users\tlomba\Documents\Tienda\tienda_astro
+#### 1.5 Ejecutar la tienda
+```bash
 npm run dev
 ```
 
-3. Abre:
 
+#### 1.6 Abrir en navegador
+- `http://localhost:4321`
+
+## 2. Stack y arquitectura
+- `Astro` como framework principal.
+- `Tailwind CSS` para estilos.
+- `Printful` como origen de catálogo/productos.
+- `simpleCart.js` para carrito en frontend.
+- `login-vedruna` (repositorio externo) como servidor de autenticación OAuth2.
+
+Arquitectura por capas:
+- UI y páginas: `src/pages`, `src/components`
+- Scripts cliente: `src/scripts`
+- Utilidades/lib: `src/lib`, `src/utils`
+- Endpoints propios (BFF ligero): `src/pages/api`
+
+## 3. Estructura principal
+- `src/components/Layout.astro`: layout global, cabecera, footer, panel del carrito.
+- `src/pages/index.astro`: home.
+- `src/pages/productos.astro`: listado de productos desde Printful.
+- `src/pages/wishlist.astro`: favoritos.
+- `src/pages/login.astro`: acceso y estado de sesión local.
+- `src/scripts/site.ts`: estado global UI (auth/wishlist/carrito/checkout).
+- `src/scripts/products-page.ts`: inicialización de tarjetas de producto.
+- `src/scripts/product-cards.ts`: variantes, wishlist y add-to-cart.
+- `src/scripts/login-page.ts`: iniciar login OAuth y logout local/remoto.
+- `src/pages/api/auth/start.ts`: inicio flujo OAuth.
+- `src/pages/api/auth/callback.ts`: callback OAuth (token + user info).
+- `src/pages/api/products/[id].ts`: precio/detalle de variante.
+- `src/pages/api/checkout.ts`: validación de checkout.
+
+## 4. Variables de entorno
+Crear `.env` en la raíz:
+
+```env
+PRINTFUL_API_KEY=tu_api_key_printful
+
+LOGIN_BASE_URL=http://localhost:9000/
+LOGIN_CLIENT_ID=tienda-astro
+LOGIN_CLIENT_SECRET=secret
+LOGIN_REDIRECT_URI=http://localhost:4321/api/auth/callback
+PAYMENT_API_BASE_URL=http://localhost:4242
 ```
-http://localhost:4321
+
+Notas:
+- `LOGIN_*` se usan en los endpoints OAuth de Astro.
+- El `LOGIN_REDIRECT_URI` debe coincidir exactamente con el registrado en el servidor de auth.
+- `PAYMENT_API_BASE_URL` apunta al backend de `plataforma-pago` (Redsys).
+
+## 5. Integración con repositorio externo `login-vedruna`
+Este proyecto depende de un servidor externo de autenticación.
+
+### 5.1 Clonar y arrancar `login-vedruna`
+Ejemplo:
+
+```bash
+git clone https://github.com/VedrunaSevillaDAW/login-vedruna.git
+cd login-vedruna
+mvn spring-boot:run
 ```
 
-## 15) Consideraciones
+Debe quedar disponible en:
+- `http://localhost:9000`
 
-- Login, wishlist y filtros se hacen 100% en JS vanilla.
-- Los endpoints de Printful requieren API key valida.
-- Snipcart usa el atributo `data-api-key` con `PUBLIC_SNIPCART_API_KEY`.
+### 5.2 Registrar cliente OAuth para la tienda
+En la base de datos del auth server (`oauth2_registered_client`) debe existir un cliente con:
+- `client_id = tienda-astro`
+- `client_secret = secret` (bcrypt en DB)
+- `redirect_uri = http://localhost:4321/api/auth/callback`
+- grant types: `authorization_code,refresh_token`
+- auth method: `client_secret_basic`
 
-## 16) Problemas comunes
+Sin ese cliente, el login fallará con error de `client_id`.
 
-- Si no carga la home: revisar `PRINTFUL_API_KEY`.
-- Si Snipcart no abre: revisar `PUBLIC_SNIPCART_API_KEY`.
-- Si login falla: revisar configuracion de Firebase.
+### 5.3 Flujo de enlace entre ambos proyectos
+1. Usuario entra en `http://localhost:4321/login`.
+2. Frontend redirige a `GET /api/auth/start`.
+3. Ese endpoint redirige a `http://localhost:9000/oauth2/authorize`.
+4. Usuario se autentica en `login-vedruna`.
+5. `login-vedruna` vuelve a `http://localhost:4321/api/auth/callback?code=...`.
+6. `callback.ts` canjea `code` por token y consulta `/api/v1/user/me`.
+7. Redirección final a home con usuario logueado en UI.
 
----
+## 6. Ejecutar en local
+1. Levantar `login-vedruna` en `:9000`.
+2. Configurar `.env` en esta tienda.
+3. Instalar dependencias:
 
-Si necesitas extender la migracion (tests, SEO, analytics, SSR avanzado), se puede ampliar desde aqui.
+```bash
+npm install
+```
+
+4. Ejecutar:
+
+```bash
+npm run dev
+```
+
+5. Abrir:
+- `http://localhost:4321`
+
+## 7. Scripts útiles
+- `npm run dev`: entorno de desarrollo.
+- `npm run build`: build de producción.
+- `npm run preview`: previsualizar build.
+
+## 8. Problemas comunes
+- Error OAuth `invalid_request client_id`:
+  - cliente no registrado en DB o `LOGIN_CLIENT_ID` incorrecto.
+- No vuelve al callback:
+  - `LOGIN_REDIRECT_URI` no coincide con el redirect URI del cliente OAuth.
+- No cargan productos:
+  - `PRINTFUL_API_KEY` inválida o faltante.
+- Header no refleja usuario:
+  - revisar `auth/callback`, localStorage y errores `auth_error` en URL.
+- Añadir el siguiente insert en la BB.DD. de login-vedruna:
+
+```bash
+INSERT INTO loginvedruna.oauth2_registered_client (
+  id,
+  client_id,
+  client_id_issued_at,
+  client_secret,
+  client_secret_expires_at,
+  client_name,
+  client_authentication_methods,
+  authorization_grant_types,
+  redirect_uris,
+  post_logout_redirect_uris,
+  scopes,
+  client_settings,
+  token_settings
+) VALUES (
+  'c7d7b1f4-2e39-4a8d-8d4b-5f8b2e9a7c11',
+  'tienda-astro',
+  NOW(),
+  '$2a$10$zUZvwU77nLg.46SvIDBKG.AVucefyTc4cJWPj/zRbWzXBtGIwI.9u', -- secret (bcrypt)
+  NULL,
+  'Tienda Astro',
+  'client_secret_basic',
+  'refresh_token,authorization_code',
+  'http://localhost:4321/api/auth/callback',
+  '',
+  'openid,profile,email,api',
+  '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":false,"settings.client.require-authorization-consent":false}',
+  '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration",300.000000000],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration",3600.000000000],"settings.token.authorization-code-time-to-live":["java.time.Duration",300.000000000],"settings.token.device-code-time-to-live":["java.time.Duration",300.000000000]}'
+);
+```
+
+## 9. Estado actual del login/registro
+- Login se hace vía OAuth contra `login-vedruna`.
+- Registro de usuario se realiza en el auth server externo (`:9000/register`).
+
+## 10. Cambios recientes (carrito/login/pago)
+- Carrito restringido a usuarios logueados:
+  - El icono y acciones protegidas usan `data-auth-required`.
+  - Si no hay sesión (`localStorage.username`), no se permite añadir al carrito ni iniciar checkout.
+- Flujo de pago conectado con `plataforma-pago`:
+  - `src/pages/api/checkout.ts` crea el pago real en Redsys.
+  - `src/pages/api/checkout/status/[id].ts` consulta estado de orden.
+  - `src/pages/pago/ok.astro` y `src/pages/pago/ko.astro` gestionan retorno.
+- Ajuste recomendado en `login-vedruna` para evitar redirecciones técnicas:
+  - Archivo: `login-vedruna/src/main/java/com/vedruna/login/config/VaadinSecurityConfig.java`.
+  - El `successHandler` debe descartar rutas tipo `/.well-known/...` y, en ese caso,
+    redirigir a `http://localhost:4321/api/auth/start` para completar OAuth y cargar usuario.
+
+## 12. Integración con repositorio externo `plataforma-pago`
+Este proyecto depende de un servidor externo de pasarela de pago para procesar compras.
+
+### 12.1 Clonar y arrancar `plataforma-pago`
+Ejemplo:
+
+```bash
+git clone https://github.com/VedrunaSevillaDAW/plataforma-pago.git
+cd plataforma-pago
+mvn spring-boot:run
+```
+
+Debe quedar disponible en:
+- `http://localhost:4242`
+
+### 12.2 Configuración para la tienda
+En la tienda (`TiendaVedruna`), define en `.env`:
+
+```env
+PAYMENT_API_BASE_URL=http://localhost:4242
+```
+
+Notas:
+- `PAYMENT_API_BASE_URL` es la base del backend de pago usado por `src/pages/api/checkout.ts`.
+- La pasarela procesa el alta del pago y devuelve los parámetros firmados de Redsys.
+
+### 12.3 Flujo de enlace entre ambos proyectos
+1. Usuario autenticado añade productos al carrito.
+2. Frontend llama a `POST /api/checkout` (Astro).
+3. Astro crea la orden en `plataforma-pago` con `POST /api/redsys/payment`.
+4. Se redirige al formulario de Redsys con firma (`Ds_*`).
+5. Redsys devuelve el resultado (OK/KO) y la orden se actualiza.
+6. Al volver al frontend, el carrito se limpia cuando el pago queda confirmado.
+
+### 12.4 Ejecución local conjunta recomendada
+1. Levanta `login-vedruna` en `:9000`.
+2. Levanta `plataforma-pago` en `:4242`.
+3. Ejecuta la tienda en `:4321` (`npm run dev`).
+4. Prueba login, añade productos al carrito y completa checkout.
+
+### 12.5 Tarjetas de prueba Redsys (sandbox)
+
+- VISA: `4548 8100 0000 0003`
+- Mastercard: `5576 4415 6304 5037`
+- Caducidad: `12/49`
+- CVV: `123`
+
+Solo válidas en entorno de pruebas Redsys.
