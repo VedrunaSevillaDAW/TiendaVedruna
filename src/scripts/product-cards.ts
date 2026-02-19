@@ -36,6 +36,9 @@ const updateWishlistIcon = (card: HTMLElement, productId: string) => {
 
 // Intenta anadir un item al carrito; devuelve exito/fallo.
 const addItemToCart = (button: HTMLButtonElement) => {
+  const username = window.localStorage.getItem("username");
+  if (!username) return false;
+
   const id = button.dataset.itemId;
   const name = button.dataset.itemName;
   const url = button.dataset.itemUrl;
